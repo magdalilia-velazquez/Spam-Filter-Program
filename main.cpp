@@ -93,18 +93,11 @@ void parseEmailAddress(string email, string& username, string& domain)
 {
    username = "";
    domain = "";
-   int counter = 0;
    long emailSize = email.size();
+   int atIndex = email.find('@');
    
-   for (int i = 0; i < emailSize; ++i) {
-      counter++;
-      if (email[i] == '@'){
-         break;
-      }
-   }
-   
-   username = email.substr(0, counter-1);
-   domain = email.substr(counter, email.size());
+   username = email.substr(0, atIndex);
+   domain = email.substr(atIndex+1, emailSize);
    
    return;
 }
@@ -174,7 +167,7 @@ int main()
         if (command == "filter"){
             cin >> emailFile;
             cin >> outputFile;
-            filter(emailFile, outputFile);
+            filter(emailFile, outputFile, emailFile, spamList);
         }
     }
     
