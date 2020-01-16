@@ -18,22 +18,23 @@ ourvector<string> load(string filename, int &numSpamEntries)
         cout << "**file not found" << endl;
         exit(-1);
     }
-    
-    string value;
-    inFS >> value;  // input file value
-    
-    while (!inFS.eof())
-    {
-        if (!inFS.fail()) {
-            numSpamEntries++;
-            spamList.push_back(value);
+    else {
+        string oneWord;
+        inFS >> oneWord;  // input file oneWord
+
+        while (!inFS.eof())
+        {
+            if (!inFS.fail()) {
+                numSpamEntries++;
+                spamList.push_back(oneWord);
+                inFS >> oneWord;
+            }
         }
-        inFS >> value;
+
+        // Done with file, so close it
+        inFS.close();
     }
-   
-    // Done with file, so close it
-    inFS.close();
-    
+        
     return spamList;
 }
 
@@ -49,16 +50,17 @@ void display(ourvector<string> spamList) {
 
 // Binary search to look up the email in the spamList vector, 
 // returning true if found, false otherwise.
-bool binarySearch(string email, ourvector<string>& spamList)
+bool binarySearch(string username, string domain, ourvector<string>& spamList)
 {	
     int mid = 0;
     int low = 0;
     int high = spamList.size() - 1;
     int searchResult = -1;  // Stores index of email if search succeeded, else -1
+    string parsedEmail = domain + ":" + username;
     
     while (low <= high)  {
         mid = (low + high) / 2;
-        searchResult = email.compare( spamList[ mid]);
+        searchResult = parsedEmail.compare(spamList[mid]);
         
         if (searchResult == 0)  {
             // email IS in vector, so return the index where the email was found
@@ -77,14 +79,44 @@ bool binarySearch(string email, ourvector<string>& spamList)
 }
 
 
+// Email is split into a domain and username
+// in order to efficiently search it in the spam list 
+void parseEmailAddress(string email, string& username, string& domain)
+{
+   username = "";
+   domain = "";
+   int counter = 0;
+   long emailSize = email.size();
+   
+   for (int i = 0; i < emailSize; ++i) {
+      counter++;
+      if (email[i] == '@'){
+         break;
+      }
+   }
+   
+   username = email.substr(0, counter-1);
+   domain = email.substr(counter, email.size());
+   
+   return;
+}
+
+
 // Checks a single email address to see if it is spam
 // uses the binarySearch() function to check 
-void check(string email, ourvector<string>& spamList) {
-	if (binarySearch(email, spamList)) {
-        cout << email << " is spam" << email;
+void check(string email, ourvector<string> spamList) {
+    string username, domain, parsedEmail;
+    
+    parseEmailAddress(email, username, domain);
+    
+    if (binarySearch("*", domain, spamList)){
+        cout << email << " is spam" << endl << endl;
+    }
+	else if (binarySearch(username, domain, spamList)) {
+        cout << email << " is spam" << endl << endl;
     }
     else {
-        cout << email << " is not spam" << endl;
+        cout << email << " is not spam" << endl << endl;
     }
 }
 
@@ -136,6 +168,8 @@ int main()
             filter(emailFile, outputFile);
         }*/
     }
+    
+    spamList._stats();
     
 	return 0;
 }
