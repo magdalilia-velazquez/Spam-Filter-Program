@@ -20,6 +20,15 @@ using namespace std;
 // Loads a spam list and checks how many spam entries it has. 
 ourvector<string> load(string filename, int &numSpamEntries) 
 {
+    /*
+      use the >> operator when inputting a single 
+      value (e.g. integer or single word). 
+      When you need to input 1 or more words
+      into a single string variable, 
+      such as the email subject, 
+      use getline(infile, variable)
+    */
+    
 	ourvector<string> spamList;
     numSpamEntries = 0;
 
