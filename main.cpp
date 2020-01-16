@@ -11,6 +11,7 @@ and filter an email list and output the resulting emails to an output file
 
 #include <iostream>
 #include <fstream>
+//#include <ofstream>
 #include <string>
 #include "ourvector.h"
 using namespace std;
@@ -21,26 +22,25 @@ ourvector<string> load(string filename, int &numSpamEntries)
 {
 	ourvector<string> spamList;
     numSpamEntries = 0;
-	
-	ifstream inFS;
-    inFS.open(filename);
+
+    ifstream infile(filename); // use infile object to read from file
     
-    if (!inFS.is_open()) {
+    if (!infile.good()) { // unable to open input file:
         cout << "**file not found" << endl;
     }
     else {
         string oneWord;
-        inFS >> oneWord;  
-
-        while (!inFS.eof())
+        infile >> oneWord;
+        
+        while (!infile.eof()) // until we hit the end-of-file:
         {
-            if (!inFS.fail()) {
+            if (!infile.fail()) {
                 numSpamEntries++;
                 spamList.push_back(oneWord);
-                inFS >> oneWord;
+                infile >> oneWord;
             }
         }
-        inFS.close();
+        infile.close();
     }
         
     return spamList;
@@ -48,7 +48,8 @@ ourvector<string> load(string filename, int &numSpamEntries)
 
 
 // Displays the contents of a spam list 
-void display(ourvector<string> spamList) {
+void display(ourvector<string> spamList) 
+{
 	for (int i = 0; i < spamList.size(); ++i){
         cout << spamList[i] << endl;
     }
@@ -105,7 +106,8 @@ void parseEmailAddress(string email, string& username, string& domain)
 
 // Checks a single email address to see if it is spam
 // uses the binarySearch() function to check 
-void check(string email, ourvector<string> spamList) {
+void check(string email, ourvector<string>& spamList) 
+{
     string username, domain, parsedEmail;
     
     parseEmailAddress(email, username, domain);
@@ -123,8 +125,18 @@ void check(string email, ourvector<string> spamList) {
 
 
 // filters an email list and outputs the resulting emails to a file 
-void filter() {
-	
+void filter(emailFile, outputFile, emailFile, spamList) 
+{	
+    ofstream outfile(outputFile); // use outfile object to write to file
+    
+    if (!outfile.good()) { // unable to open output file:
+        cout << "**file not found" << endl;
+    }
+    else {
+        outfile << "hello world!" << endl;
+        
+        outfile.close(); // make sure contents are written by closing file:
+    }
 }
 
 
@@ -147,9 +159,9 @@ int main()
         cin >> command; //user input for the command 
 
         if (command == "load"){
+            spamList.clear();
             cin >> filename; //spam list file name
             cout << "Loading '" << filename << "'" << endl;
-            spamList.clear();
             spamList = load(filename, numOfSpamEntries);
             cout << "# of spam entries: " << numOfSpamEntries << endl;
             cout << endl;
