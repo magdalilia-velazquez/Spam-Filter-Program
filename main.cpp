@@ -16,7 +16,6 @@ ourvector<string> load(string filename, int &numSpamEntries)
     
     if (!inFS.is_open()) {
         cout << "**file not found" << endl;
-        exit(-1);
     }
     else {
         string oneWord;
@@ -161,12 +160,12 @@ int main()
             cin >> email;
             check(email, spamList);
         }
-/*
+
         if (command == "filter"){
             cin >> emailFile;
             cin >> outputFile;
             filter(emailFile, outputFile);
-        }*/
+        }
     }
     
     spamList._stats();
