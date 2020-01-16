@@ -1,3 +1,14 @@
+/*
+Lili Velazquez 
+University of Illinois at Chicago
+CS 251: Spring 2020
+
+Project 01: Spam Filter Program
+A C++ program that is able to load a spam list, display its contents, 
+check a single email address to see if it’s spam, 
+and filter an email list and output the resulting emails to an output file
+*/
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -19,7 +30,7 @@ ourvector<string> load(string filename, int &numSpamEntries)
     }
     else {
         string oneWord;
-        inFS >> oneWord;  // input file oneWord
+        inFS >> oneWord;  
 
         while (!inFS.eof())
         {
@@ -29,8 +40,6 @@ ourvector<string> load(string filename, int &numSpamEntries)
                 inFS >> oneWord;
             }
         }
-
-        // Done with file, so close it
         inFS.close();
     }
         
@@ -142,11 +151,12 @@ int main()
     while (command != "#") 
     {
         cout << "Enter command or # to exit> ";
-        cin >> command; //user input for the command/function 
+        cin >> command; //user input for the command 
 
         if (command == "load"){
             cin >> filename; //spam list file name
             cout << "Loading '" << filename << "'" << endl;
+            spamList.clear();
             spamList = load(filename, numOfSpamEntries);
             cout << "# of spam entries: " << numOfSpamEntries << endl;
             cout << endl;
