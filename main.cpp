@@ -190,8 +190,8 @@ int main()
     string emailFile;
     string outputFile;
     int numOfSpamEntries;
-    int numEmailsProcessed = 0;
-    int numNonSpamEmails = 0;
+    int numEmailsProcessed;
+    int numNonSpamEmails;
     
     cout << "** Welcome to spam filtering app **" << endl;
     cout << endl;
@@ -220,6 +220,8 @@ int main()
         }
 
         if (command == "filter"){
+            numEmailsProcessed = 0;
+            numNonSpamEmails = 0;
             cin >> emailFile;
             cin >> outputFile;
             openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
