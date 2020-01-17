@@ -139,18 +139,19 @@ void newEmailList(string outputFile, int msgId, string emailAddress, string subj
 
 
 // filters an email list and outputs the resulting emails to a file 
-void filter(string outputFile, ourvector<string> spamList, int msgId, string emailAddress, string subject) 
+void filter(string outputFile, ourvector<string> spamList, int msgId, string emailAddress, string subject, int& numNonSpamEmails) 
 {   
     string username, domain;
     parseEmailAddress(emailAddress, username, domain);
     
     if ((!binarySearch("*", domain, spamList)) && (!binarySearch(username, domain, spamList))){
+        numNonSpamEmails++; 
         newEmailList(outputFile, msgId, emailAddress, subject);
     }
 }
 
 
-void openEmailFile(string emailFile, string outputFile, ourvector<string> spamList)
+void openEmailFile(string emailFile, string outputFile, ourvector<string> spamList, int& numEmailsProcessed, int& numNonSpamEmails)
 {
     ifstream infile(emailFile); // use infile object to read from file
     
@@ -168,7 +169,8 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
         while (!infile.eof()) // until we hit the end-of-file:
         {
             if (!infile.fail()) {
-                filter(outputFile, spamList, msgId, emailAddress, subject);
+                numEmailsProcessed++;
+                filter(outputFile, spamList, msgId, emailAddress, subject, numNonSpamEmails);
                 infile >> msgId;
                 infile >> emailAddress;
                 getline(infile, subject);
@@ -188,6 +190,8 @@ int main()
     string emailFile;
     string outputFile;
     int numOfSpamEntries;
+    int numEmailsProcessed = 0;
+    int numNonSpamEmails = 0;
     
     cout << "** Welcome to spam filtering app **" << endl;
     cout << endl;
@@ -218,7 +222,9 @@ int main()
         if (command == "filter"){
             cin >> emailFile;
             cin >> outputFile;
-            openEmailFile(emailFile, outputFile, spamList);
+            openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
+            cout << "# emails processed: " << numEmailsProcessed << endl;
+            cout << "# non-span emails: " << numNonSpamEmails << endl << endl;
             //filter(emailFile, outputFile, spamList);
         }
     }
