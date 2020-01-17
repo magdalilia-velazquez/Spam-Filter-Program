@@ -17,15 +17,6 @@ and filter an email list and output the resulting emails to an output file
 using namespace std;
 
 
-/*
- * TO DO:
- * 
-  YOUR PROGRAM IS REQUIRED TO WORK PROPERLY IF THE INPUT OR OUTPUT FILES CANNOT BE OPENED, THE USER SPECIFIES
-  AN UNKNOWN COMMAND, THE USER INPUTS A BADLY-FORMED EMAIL ADDRESS, OR THE USER TRIES TO DISPLAY / CHECK /
-  FILTER BEFORE LOADING A SPAM LIST.
-  */
-
-
 // Loads a spam list and checks how many spam entries it has. 
 ourvector<string> load(string filename) 
 {    
@@ -194,7 +185,7 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
         }
         infile.close();
         cout << "# emails processed: " << numEmailsProcessed << endl;
-        cout << "# non-spam emails: " << numNonSpamEmails << endl << endl;
+        cout << "# non-spam emails:  " << numNonSpamEmails << endl << endl;
     }
 }
 
