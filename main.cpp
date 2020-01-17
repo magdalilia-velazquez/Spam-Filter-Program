@@ -214,7 +214,6 @@ int main()
             cin >> filename; //spam list file name
             spamList = load(filename);
         }
-
         else if (command == "display"){
             display(spamList);
         }
@@ -231,7 +230,7 @@ int main()
             cin >> outputFile;
             openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
         }
-        else {
+        else if (command != "#") {
             cout << "**invalid command" << endl;
             cout << endl; 
         }
