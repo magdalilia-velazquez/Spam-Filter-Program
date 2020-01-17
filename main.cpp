@@ -17,18 +17,31 @@ and filter an email list and output the resulting emails to an output file
 using namespace std;
 
 
+/*
+ * TO DO:
+ * 
+  YOUR PROGRAM IS REQUIRED TO WORK PROPERLY IF THE INPUT OR OUTPUT FILES CANNOT BE OPENED, THE USER SPECIFIES
+  AN UNKNOWN COMMAND, THE USER INPUTS A BADLY-FORMED EMAIL ADDRESS, OR THE USER TRIES TO DISPLAY / CHECK /
+  FILTER BEFORE LOADING A SPAM LIST.
+  */
+
+
 // Loads a spam list and checks how many spam entries it has. 
-ourvector<string> load(string filename, int &numSpamEntries) 
+ourvector<string> load(string filename) 
 {    
 	ourvector<string> spamList;
-    numSpamEntries = 0;
+    int numSpamEntries = 0;
 
     ifstream infile(filename); // use infile object to read from file
     
     if (!infile.good()) { // unable to open input file:
-        cout << "**file not found" << endl;
+        cout << "**Error, unable to open '" << filename << "'" << endl;
+        cout << endl;
     }
     else {
+        
+        cout << "Loading '" << filename << "'" << endl;
+        
         string oneWord;
         infile >> oneWord;
         
@@ -41,6 +54,8 @@ ourvector<string> load(string filename, int &numSpamEntries)
             }
         }
         infile.close();
+        cout << "# of spam entries: " << numSpamEntries << endl;
+        cout << endl;
     }
         
     return spamList;
@@ -126,10 +141,11 @@ void newEmailList(string outputFile, int msgId, string emailAddress, string subj
     ofstream outfile(outputFile); // use outfile object to write to file
     
     if (!outfile.good()) { // unable to open output file:
-        cout << "**file not found" << endl;
+        cout << "**file cannot be opened" << endl;
     }
     else {
         outfile << msgId << " " << emailAddress << subject << endl;
+        //cout << msgId << " " << emailAddress << subject << endl;
         outfile.close(); // make sure contents are written by closing file:
     }
 }
@@ -155,7 +171,7 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
     ifstream infile(emailFile); // use infile object to read from file
     
     if (!infile.good()) { // unable to open input file:
-        cout << "**file not found" << endl;
+        cout << "**Error, unable to open '" << emailFile << "'" << endl;
     }
     else {
         int msgId;
@@ -188,7 +204,6 @@ int main()
     string email;
     string emailFile;
     string outputFile;
-    int numOfSpamEntries;
     int numEmailsProcessed;
     int numNonSpamEmails;
     
@@ -203,22 +218,19 @@ int main()
         if (command == "load"){
             spamList.clear();
             cin >> filename; //spam list file name
-            cout << "Loading '" << filename << "'" << endl;
-            spamList = load(filename, numOfSpamEntries);
-            cout << "# of spam entries: " << numOfSpamEntries << endl;
-            cout << endl;
+            spamList = load(filename);
         }
 
-        if (command == "display"){
+        else if (command == "display"){
             display(spamList);
         }
 
-        if (command == "check"){
+        else if (command == "check"){
             cin >> email;
             check(email, spamList);
         }
 
-        if (command == "filter"){
+        else if (command == "filter"){
             numEmailsProcessed = 0;
             numNonSpamEmails = 0;
             cin >> emailFile;
@@ -226,6 +238,10 @@ int main()
             openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
             cout << "# emails processed: " << numEmailsProcessed << endl;
             cout << "# non-spam emails: " << numNonSpamEmails << endl << endl;
+        }
+        else {
+            cout << "**invalid command" << endl;
+            cout << endl; 
         }
     }
     
