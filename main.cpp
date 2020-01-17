@@ -19,16 +19,7 @@ using namespace std;
 
 // Loads a spam list and checks how many spam entries it has. 
 ourvector<string> load(string filename, int &numSpamEntries) 
-{
-    /*
-      use the >> operator when inputting a single 
-      value (e.g. integer or single word). 
-      When you need to input 1 or more words
-      into a single string variable, 
-      such as the email subject, 
-      use getline(infile, variable)
-    */
-    
+{    
 	ourvector<string> spamList;
     numSpamEntries = 0;
 
@@ -74,11 +65,11 @@ bool binarySearch(string username, string domain, ourvector<string>& spamList)
     int low = 0;
     int high = spamList.size() - 1;
     int searchResult = -1;  // Stores index of email if search succeeded, else -1
-    string parsedEmail = domain + ":" + username;
+    string domainUsername = domain + ":" + username;
     
     while (low <= high)  {
         mid = (low + high) / 2;
-        searchResult = parsedEmail.compare(spamList[mid]);
+        searchResult = domainUsername.compare(spamList[mid]);
         
         if (searchResult == 0)  {
             // email IS in vector, so return the index where the email was found
@@ -101,15 +92,15 @@ bool binarySearch(string username, string domain, ourvector<string>& spamList)
 // in order to efficiently search it in the spam list 
 void parseEmailAddress(string email, string& username, string& domain)
 {
-   username = "";
-   domain = "";
+   //username = "";
+   //domain = "";
    long emailSize = email.size();
    int atIndex = email.find('@');
    
    username = email.substr(0, atIndex);
    domain = email.substr(atIndex+1, emailSize);
    
-   return;
+   //return;
 }
 
 
@@ -117,7 +108,7 @@ void parseEmailAddress(string email, string& username, string& domain)
 // uses the binarySearch() function to check 
 void check(string email, ourvector<string>& spamList) 
 {
-    string username, domain, parsedEmail;
+    string username, domain; //, domainUsername;
     
     parseEmailAddress(email, username, domain);
     
@@ -133,42 +124,57 @@ void check(string email, ourvector<string>& spamList)
 }
 
 
-// filters an email list and outputs the resulting emails to a file 
-void filter(emailFile, outputFile, spamList) 
-{	
-    int msgId;
-    string emailAddress;
-    string subject; 
-    
-    ifstream infile(emailFile); // use infile object to read from file
-    
-    if (!infile.good()) { // unable to open input file:
-        cout << "**file not found" << endl;
-    }
-    else {
-        string oneWord;
-        infile >> oneWord;
-        
-        while (!infile.eof()) // until we hit the end-of-file:
-        {
-            if (!infile.fail()) {
-                numSpamEntries++;
-                spamList.push_back(oneWord);
-                infile >> oneWord;
-            }
-        }
-        infile.close();
-    }
-    
+void newEmailList(string outputFile, int msgId, string emailAddress, string subject) 
+{
     ofstream outfile(outputFile); // use outfile object to write to file
     
     if (!outfile.good()) { // unable to open output file:
         cout << "**file not found" << endl;
     }
     else {
-        outfile << "hello world!" << endl;
-        
+        outfile << msgId << " " << emailAddress << subject << endl;
         outfile.close(); // make sure contents are written by closing file:
+    }
+}
+
+
+// filters an email list and outputs the resulting emails to a file 
+void filter(string outputFile, ourvector<string> spamList, int msgId, string emailAddress, string subject) 
+{   
+    string username, domain;
+    parseEmailAddress(emailAddress, username, domain);
+    
+    if ((!binarySearch("*", domain, spamList)) && (!binarySearch(username, domain, spamList))){
+        newEmailList(outputFile, msgId, emailAddress, subject);
+    }
+}
+
+
+void openEmailFile(string emailFile, string outputFile, ourvector<string> spamList)
+{
+    ifstream infile(emailFile); // use infile object to read from file
+    
+    if (!infile.good()) { // unable to open input file:
+        cout << "**file not found" << endl;
+    }
+    else {
+        int msgId;
+        string emailAddress;
+        string subject;
+        infile >> msgId;
+        infile >> emailAddress;
+        getline(infile, subject);
+        
+        while (!infile.eof()) // until we hit the end-of-file:
+        {
+            if (!infile.fail()) {
+                filter(outputFile, spamList, msgId, emailAddress, subject);
+                infile >> msgId;
+                infile >> emailAddress;
+                getline(infile, subject);
+            }
+        }
+        infile.close();
     }
 }
 
@@ -212,7 +218,8 @@ int main()
         if (command == "filter"){
             cin >> emailFile;
             cin >> outputFile;
-            filter(emailFile, outputFile, spamList);
+            openEmailFile(emailFile, outputFile, spamList);
+            //filter(emailFile, outputFile, spamList);
         }
     }
     
