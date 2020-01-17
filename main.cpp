@@ -134,8 +134,32 @@ void check(string email, ourvector<string>& spamList)
 
 
 // filters an email list and outputs the resulting emails to a file 
-void filter(emailFile, outputFile, emailFile, spamList) 
+void filter(emailFile, outputFile, spamList) 
 {	
+    int msgId;
+    string emailAddress;
+    string subject; 
+    
+    ifstream infile(emailFile); // use infile object to read from file
+    
+    if (!infile.good()) { // unable to open input file:
+        cout << "**file not found" << endl;
+    }
+    else {
+        string oneWord;
+        infile >> oneWord;
+        
+        while (!infile.eof()) // until we hit the end-of-file:
+        {
+            if (!infile.fail()) {
+                numSpamEntries++;
+                spamList.push_back(oneWord);
+                infile >> oneWord;
+            }
+        }
+        infile.close();
+    }
+    
     ofstream outfile(outputFile); // use outfile object to write to file
     
     if (!outfile.good()) { // unable to open output file:
@@ -188,7 +212,7 @@ int main()
         if (command == "filter"){
             cin >> emailFile;
             cin >> outputFile;
-            filter(emailFile, outputFile, emailFile, spamList);
+            filter(emailFile, outputFile, spamList);
         }
     }
     
