@@ -172,6 +172,7 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
     
     if (!infile.good()) { // unable to open input file:
         cout << "**Error, unable to open '" << emailFile << "'" << endl;
+        cout << endl;
     }
     else {
         int msgId;
@@ -192,6 +193,8 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
             }
         }
         infile.close();
+        cout << "# emails processed: " << numEmailsProcessed << endl;
+        cout << "# non-spam emails: " << numNonSpamEmails << endl << endl;
     }
 }
 
@@ -236,8 +239,6 @@ int main()
             cin >> emailFile;
             cin >> outputFile;
             openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
-            cout << "# emails processed: " << numEmailsProcessed << endl;
-            cout << "# non-spam emails: " << numNonSpamEmails << endl << endl;
         }
         else {
             cout << "**invalid command" << endl;
