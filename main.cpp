@@ -225,7 +225,7 @@ int main()
             cin >> outputFile;
             openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
             cout << "# emails processed: " << numEmailsProcessed << endl;
-            cout << "# non-span emails: " << numNonSpamEmails << endl << endl;
+            cout << "# non-spam emails: " << numNonSpamEmails << endl << endl;
         }
     }
     
