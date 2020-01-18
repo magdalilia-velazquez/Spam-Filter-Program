@@ -127,39 +127,25 @@ void check(string email, ourvector<string>& spamList)
 // creates an output file to insert all the non-spam emails from an email file
 void newEmailList(string outputFile, int msgId, string emailAddress, string subject) 
 {
-    ofstream outfile(outputFile); // use outfile object to write to file
     
-    if (!outfile.good()) { // unable to open output file:
-        cout << "**file cannot be opened" << endl;
-    }
-    else {
-        outfile << msgId << " " << emailAddress << " " << subject << endl;
-        outfile.close(); // make sure contents are written by closing file:
-    }
+    
 }
 
 
 // filters an email list and outputs the resulting emails to a file 
 void filter(string outputFile, ourvector<string> spamList, int msgId, string emailAddress, string subject, int& numNonSpamEmails) 
 {   
-    string username, domain;
-    parseEmailAddress(emailAddress, username, domain);
     
-    if ((!binarySearch("*", domain, spamList)) && (!binarySearch(username, domain, spamList))){
-        numNonSpamEmails++; 
-        newEmailList(outputFile, msgId, emailAddress, subject);
-    }
+    
 }
 
 
 // opens an email file and goes through the 3 different values
 // to place them in separate variables 
-void openEmailFile(string emailFile, string outputFile, ourvector<string> spamList)
+void filter(string emailFile, string outputFile, ourvector<string> spamList, int& numEmailsProcessed, int& numNonSpamEmails)
 {
-    int numEmailsProcessed = 0;
-    int numNonSpamEmails = 0;
-    
     ifstream infile(emailFile); // use infile object to read from file
+    ofstream outfile(outputFile); // use outfile object to write to file
     
     if (!infile.good()) { // unable to open input file:
         cout << "**Error, unable to open '" << emailFile << "'" << endl;
@@ -172,16 +158,30 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
         infile >> msgId;
         infile >> emailAddress;
         getline(infile, subject);
+        string username, domain;
         
         while (!infile.eof()) // until we hit the end-of-file:
         {
             numEmailsProcessed++;
-            filter(outputFile, spamList, msgId, emailAddress, subject, numNonSpamEmails);
+            parseEmailAddress(emailAddress, username, domain);
+    
+            if ((!binarySearch("*", domain, spamList)) && (!binarySearch(username, domain, spamList))){
+                numNonSpamEmails++; 
+                if (!outfile.good()) { // unable to open output file:
+                    cout << "**file cannot be opened" << endl;
+                }
+                else {
+                    outfile << msgId << " " << emailAddress << " " << subject << endl;
+                    //outfile.close(); // make sure contents are written by closing file:
+                }
+            }
+            
             infile >> msgId;
             infile >> emailAddress;
             getline(infile, subject);
         }
         infile.close();
+        outfile.close();
         cout << "# emails processed: " << numEmailsProcessed << endl;
         cout << "# non-spam emails:  " << numNonSpamEmails << endl << endl;
     }
@@ -196,6 +196,8 @@ int main()
     string email;
     string emailFile;
     string outputFile;
+    int numEmailsProcessed;
+    int numNonSpamEmails;
     
     cout << "** Welcome to spam filtering app **" << endl;
     cout << endl;
@@ -224,7 +226,7 @@ int main()
             numNonSpamEmails = 0;
             cin >> emailFile;
             cin >> outputFile;
-            openEmailFile(emailFile, outputFile, spamList);
+            filter(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
         }
         else if (command != "#") {
             cout << "**invalid command" << endl;
