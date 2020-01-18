@@ -108,7 +108,7 @@ void parseEmailAddress(string email, string& username, string& domain)
 // uses the binarySearch() function to check 
 void check(string email, ourvector<string>& spamList) 
 {
-    string username, domain; //, domainUsername;
+    string username, domain;
     
     parseEmailAddress(email, username, domain);
     
@@ -154,8 +154,11 @@ void filter(string outputFile, ourvector<string> spamList, int msgId, string ema
 
 // opens an email file and goes through the 3 different values
 // to place them in separate variables 
-void openEmailFile(string emailFile, string outputFile, ourvector<string> spamList, int& numEmailsProcessed, int& numNonSpamEmails)
+void openEmailFile(string emailFile, string outputFile, ourvector<string> spamList)
 {
+    int numEmailsProcessed = 0;
+    int numNonSpamEmails = 0;
+    
     ifstream infile(emailFile); // use infile object to read from file
     
     if (!infile.good()) { // unable to open input file:
@@ -193,8 +196,6 @@ int main()
     string email;
     string emailFile;
     string outputFile;
-    int numEmailsProcessed;
-    int numNonSpamEmails;
     
     cout << "** Welcome to spam filtering app **" << endl;
     cout << endl;
@@ -223,7 +224,7 @@ int main()
             numNonSpamEmails = 0;
             cin >> emailFile;
             cin >> outputFile;
-            openEmailFile(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
+            openEmailFile(emailFile, outputFile, spamList);
         }
         else if (command != "#") {
             cout << "**invalid command" << endl;
