@@ -124,24 +124,8 @@ void check(string email, ourvector<string>& spamList)
 }
 
 
-// creates an output file to insert all the non-spam emails from an email file
-void newEmailList(string outputFile, int msgId, string emailAddress, string subject) 
-{
-    
-    
-}
-
-
-// filters an email list and outputs the resulting emails to a file 
-void filter(string outputFile, ourvector<string> spamList, int msgId, string emailAddress, string subject, int& numNonSpamEmails) 
-{   
-    
-    
-}
-
-
-// opens an email file and goes through the 3 different values
-// to place them in separate variables 
+// Creates an output file to insert all the non-spam emails from an email file
+// Filters an email list and outputs the resulting emails to the output file 
 void filter(string emailFile, string outputFile, ourvector<string> spamList, int& numEmailsProcessed, int& numNonSpamEmails)
 {
     ifstream infile(emailFile); // use infile object to read from file
