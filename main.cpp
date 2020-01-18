@@ -38,11 +38,9 @@ ourvector<string> load(string filename)
         
         while (!infile.eof()) // until we hit the end-of-file:
         {
-            if (!infile.fail()) {
-                numSpamEntries++;
-                spamList.push_back(oneWord);
-                infile >> oneWord;
-            }
+            numSpamEntries++;
+            spamList.push_back(oneWord);
+            infile >> oneWord;
         }
         infile.close();
         cout << "# of spam entries: " << numSpamEntries << endl;
@@ -135,8 +133,7 @@ void newEmailList(string outputFile, int msgId, string emailAddress, string subj
         cout << "**file cannot be opened" << endl;
     }
     else {
-        outfile << msgId << " " << emailAddress << subject << endl;
-        //cout << msgId << " " << emailAddress << subject << endl;
+        outfile << msgId << " " << emailAddress << " " << subject << endl;
         outfile.close(); // make sure contents are written by closing file:
     }
 }
@@ -175,13 +172,11 @@ void openEmailFile(string emailFile, string outputFile, ourvector<string> spamLi
         
         while (!infile.eof()) // until we hit the end-of-file:
         {
-            if (!infile.fail()) {
-                numEmailsProcessed++;
-                filter(outputFile, spamList, msgId, emailAddress, subject, numNonSpamEmails);
-                infile >> msgId;
-                infile >> emailAddress;
-                getline(infile, subject);
-            }
+            numEmailsProcessed++;
+            filter(outputFile, spamList, msgId, emailAddress, subject, numNonSpamEmails);
+            infile >> msgId;
+            infile >> emailAddress;
+            getline(infile, subject);
         }
         infile.close();
         cout << "# emails processed: " << numEmailsProcessed << endl;
