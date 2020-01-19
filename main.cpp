@@ -1,7 +1,9 @@
-/*
+/* 
 Lili Velazquez 
+18 January 2020
 University of Illinois at Chicago
-CS 251: Spring 2020
+CS 251: Data Structures 
+Spring 2020
 
 Project 01: Spam Filter Program
 A C++ program that is able to load a spam list, display its contents, 
@@ -11,14 +13,14 @@ and filter an email list and output the resulting emails to an output file
 
 #include <iostream>
 #include <fstream>
-//#include <ofstream>
 #include <string>
 #include "ourvector.h"
 using namespace std;
 
 
-// Loads a spam list and checks how many spam entries it has. 
-ourvector<string> load(string filename) 
+// Takes a file as a parameter to 
+// load a spam list and check how many spam entries the list has. 
+ourvector<string> load(string filename)
 {    
 	ourvector<string> spamList;
     int numSpamEntries = 0;
@@ -42,18 +44,20 @@ ourvector<string> load(string filename)
             spamList.push_back(oneWord);
             infile >> oneWord;
         }
-        infile.close();
+        infile.close(); 
         cout << "# of spam entries: " << numSpamEntries << endl;
         cout << endl;
     }
         
-    return spamList;
+    return spamList; //returns the vector with spam emails 
 }
 
 
 // Displays the contents of a spam list 
-void display(ourvector<string> spamList) 
+// Only takes in the spam list as a parameter
+void display(ourvector<string>& spamList) 
 {
+    // loops through the spam list and displays each email 
 	for (int i = 0; i < spamList.size(); ++i){
         cout << spamList[i] << endl;
     }
@@ -63,21 +67,23 @@ void display(ourvector<string> spamList)
 
 // Binary search to look up the email in the spamList vector, 
 // returning true if found, false otherwise.
+// Takes in 3 parameters: 
+//    --> the username and domain parsed from the email,
+//    --> and the spam list vector to search through it
 bool binarySearch(string username, string domain, ourvector<string>& spamList)
 {	
     int mid = 0;
     int low = 0;
     int high = spamList.size() - 1;
     int searchResult = -1;  // Stores index of email if search succeeded, else -1
-    string domainUsername = domain + ":" + username;
+    string domainUsername = domain + ":" + username; // concatenated to find an exact match
     
     while (low <= high)  {
         mid = (low + high) / 2;
         searchResult = domainUsername.compare(spamList[mid]);
         
         if (searchResult == 0)  {
-            // email IS in vector, so return the index where the email was found
-            return true;
+            return true; // email IS in vector, so return the index where the email was found
         }
         else if (searchResult < 0)  {
             high = mid - 1; // email should be located before the mid location
@@ -85,19 +91,22 @@ bool binarySearch(string username, string domain, ourvector<string>& spamList)
         else  {
             low = mid + 1; // email should be located after the mid location
         }
-    }
-    
-    // email was not found
-	return false;
+    }  
+	return false; // returns email if it was not found
 }
 
 
 // Email is split into a domain and username
-// in order to efficiently search it in the spam list 
+// in order to efficiently search it in the spam list.
+// Takes in 3 parameters:
+//    --> the email that needs to be checked if it is a spam email, 
+//    --> the username which is parsed from the email
+//    --> and the domain also parsed from email 
+//    both the username and domain are passed by reference 
 void parseEmailAddress(string email, string& username, string& domain)
 {
-   long emailSize = email.size();
-   int atIndex = email.find('@');
+   int emailSize = email.size();
+   int atIndex = email.find('@'); 
    
    username = email.substr(0, atIndex);
    domain = email.substr(atIndex+1, emailSize);
@@ -105,19 +114,22 @@ void parseEmailAddress(string email, string& username, string& domain)
 
 
 // Checks a single email address to see if it is spam
-// uses the binarySearch() function to check 
+// uses the binarySearch() function to search through the spam list.
+// Takes in 2 parameters: email that needs to be checked if it is a spam email and the spam list 
 void check(string email, ourvector<string>& spamList) 
 {
-    string username, domain;
+    string username, domain; 
+    parseEmailAddress(email, username, domain); // calls the function needed to split the email into username and domain 
     
-    parseEmailAddress(email, username, domain);
-    
+    // First checks if the there is any domain:* form because any username associated with that domain is spam
     if (binarySearch("*", domain, spamList)){
         cout << email << " is spam" << endl << endl;
     }
+    // if the email is found in the spam list then the email is spam
 	else if (binarySearch(username, domain, spamList)) {
         cout << email << " is spam" << endl << endl;
     }
+    // else if the email was not found then it is not spam 
     else {
         cout << email << " is not spam" << endl << endl;
     }
@@ -126,8 +138,14 @@ void check(string email, ourvector<string>& spamList)
 
 // Creates an output file to insert all the non-spam emails from an email file
 // Filters an email list and outputs the resulting emails to the output file 
-void filter(string emailFile, string outputFile, ourvector<string> spamList, int& numEmailsProcessed, int& numNonSpamEmails)
+// Takes in 3 parameters: email file (to open it and go through every email),
+// output file to open it and write in it the non-spam emails from the email file,
+// and the spam list to search if an email from the email file is spam or not
+void filter(string emailFile, string outputFile, ourvector<string>& spamList)
 {
+    int numEmailsProcessed = 0;
+    int numNonSpamEmails = 0;
+    
     ifstream infile(emailFile); // use infile object to read from file
     ofstream outfile(outputFile); // use outfile object to write to file
     
@@ -149,14 +167,16 @@ void filter(string emailFile, string outputFile, ourvector<string> spamList, int
             numEmailsProcessed++;
             parseEmailAddress(emailAddress, username, domain);
     
-            if ((!binarySearch("*", domain, spamList)) && (!binarySearch(username, domain, spamList))){
+            // checks if the email is not spam in order to add it to the output file 
+            if ((!binarySearch("*", domain, spamList)) && (!binarySearch(username, domain, spamList))){ 
                 numNonSpamEmails++; 
                 if (!outfile.good()) { // unable to open output file:
-                    cout << "**file cannot be opened" << endl;
+                    cout << "**Error, unable to open '" << outputFile << "'" << endl;
+                    cout << endl;
                 }
                 else {
-                    outfile << msgId << " " << emailAddress << " " << subject << endl;
-                    //outfile.close(); // make sure contents are written by closing file:
+                    // wirtes the non-spam email into the output file 
+                    outfile << msgId << " " << emailAddress << " " << subject << endl;                    
                 }
             }
             
@@ -164,7 +184,7 @@ void filter(string emailFile, string outputFile, ourvector<string> spamList, int
             infile >> emailAddress;
             getline(infile, subject);
         }
-        infile.close();
+        infile.close(); 
         outfile.close();
         cout << "# emails processed: " << numEmailsProcessed << endl;
         cout << "# non-spam emails:  " << numNonSpamEmails << endl << endl;
@@ -180,8 +200,6 @@ int main()
     string email;
     string emailFile;
     string outputFile;
-    int numEmailsProcessed;
-    int numNonSpamEmails;
     
     cout << "** Welcome to spam filtering app **" << endl;
     cout << endl;
@@ -206,11 +224,9 @@ int main()
         }
 
         else if (command == "filter"){
-            numEmailsProcessed = 0;
-            numNonSpamEmails = 0;
             cin >> emailFile;
             cin >> outputFile;
-            filter(emailFile, outputFile, spamList, numEmailsProcessed, numNonSpamEmails);
+            filter(emailFile, outputFile, spamList);
         }
         else if (command != "#") {
             cout << "**invalid command" << endl;
